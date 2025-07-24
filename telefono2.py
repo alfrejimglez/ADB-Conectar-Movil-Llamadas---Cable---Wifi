@@ -238,6 +238,10 @@ class ADBPhoneApp(tk.Tk):
             messagebox.showwarning("Aviso", "Introduce un número de teléfono.")
             return
 
+        # Normaliza el número: si empieza por 34 y no tiene '+', añade el '+'
+        if number.startswith("34") and not number.startswith("+") and len(number) > 9:
+            number = "+" + number
+
         def task():
             subprocess.run(['adb', '-s', self.current_device, 'shell', 'am', 'start', '-a',
                             'android.intent.action.CALL', '-d', f'tel:{number}'],
