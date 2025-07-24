@@ -6,11 +6,13 @@ import time
 import re
 from datetime import datetime
 import sys
+
+#permite minimizar al abrirlo
 if sys.platform == "win32":
     import ctypes
     ctypes.windll.user32.ShowWindow(ctypes.windll.kernel32.GetConsoleWindow(), 0)
     
-    
+    #inicio intefaz y llamada de defs
 class ADBPhoneApp(tk.Tk):
     def __init__(self):
         super().__init__()
@@ -32,7 +34,7 @@ class ADBPhoneApp(tk.Tk):
         self.monitorear_llamadas()  # Llama a la función unificada de monitoreo
         self.after(2000, self.verificar_bluetooth)  # Verifica automáticamente
 
-
+#secciones de la UI con su tamaño y fuentes
     def create_widgets(self):
         # Panel izquierdo
         left_frame = ttk.Frame(self)
@@ -149,6 +151,9 @@ class ADBPhoneApp(tk.Tk):
         self.historial_text.pack(fill=tk.BOTH, expand=True)
 
 
+
+#funcion comando adb
+
     def run_adb_command(self, args, timeout=10):
         try:
             result = subprocess.run(args, capture_output=True, text=True,
@@ -156,7 +161,7 @@ class ADBPhoneApp(tk.Tk):
             return result.stdout.strip()
         except Exception:
             return None
-
+#funcion carga dispostivio si adb esta okey en el equipo
     def cargar_dispositivos(self):
         output = self.run_adb_command(['adb', 'devices'])
         devices = []
@@ -181,11 +186,12 @@ class ADBPhoneApp(tk.Tk):
         self.obtener_bateria()
         self.after(200, self.cargar_historial)
 
+#func si cambia de device
     def on_device_change(self, event=None):
         self.current_device = self.device_combo.get()
         self.obtener_bateria()
         self.cargar_historial()
-
+#obtener bateria
     def obtener_bateria(self):
         if not self.current_device:
             return
@@ -221,6 +227,7 @@ class ADBPhoneApp(tk.Tk):
     def ocultar_botones(self):
         self.call_btn.state(['disabled'])
         self.hangup_btn.state(['disabled'])
+#funcion llamar 
 
     def llamar(self):
         if not self.current_device:
@@ -242,7 +249,7 @@ class ADBPhoneApp(tk.Tk):
             self.after(3000, self.cargar_historial)
 
         threading.Thread(target=task, daemon=True).start()
-
+#funcion colgar
 
     def colgar(self):
         if not self.current_device:
@@ -258,7 +265,7 @@ class ADBPhoneApp(tk.Tk):
             self.after(0, lambda: self.hangup_btn.state(['!disabled']))
 
         threading.Thread(target=task, daemon=True).start()
-
+#func diferentes estados 1 es q llamo , 2 activa
     def monitorear_llamadas(self):
         def monitor():
             llamada_activa = False
@@ -318,7 +325,7 @@ class ADBPhoneApp(tk.Tk):
 
        
 
-
+#moco para ver si me llaman
     def mostrar_dialogo_llamada(self, numero):
         if self.dialogo_abierto:
             return
