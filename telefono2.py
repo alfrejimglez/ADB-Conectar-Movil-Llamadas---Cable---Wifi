@@ -284,13 +284,13 @@ class ADBPhoneApp(tk.Tk):
 
                 # Llamada entrante detectada
                 # Llamada entrante
-                if "mCallState=1" in salida and not self.en_llamada and not self.llamada_entrante_activa:
-                    self.llamada_entrante_activa = True
+                if "mCallState=1" in salida and not self.en_llamada:
+                    if not self.llamada_entrante_activa:
+                        self.llamada_entrante_activa = True
 
-                    numero_match = re.search(r'mCallIncomingNumber=([\d+]+)', salida)
-                    numero = numero_match.group(1) if numero_match else "Desconocido"
+                        numero_match = re.search(r'mCallIncomingNumber=([\d+]+)', salida)
+                        numero = numero_match.group(1) if numero_match else "Desconocido"
 
-                    if not self.dialogo_abierto:
                         self.after(0, lambda: self.mostrar_dialogo_llamada(numero))
 
 
@@ -311,17 +311,16 @@ class ADBPhoneApp(tk.Tk):
 
                 # Llamada finalizada
                 elif "mCallState=0" in salida:
-                    if llamada_activa or llamada_entrante_activa:
-                        llamada_activa = False
-                        llamada_entrante_activa = False
-                        self.llamada_entrante_activa = False
-                        self.en_llamada = False
-                        self.call_timer_running = False
-                        self.call_start_time = None
-                        self.after(0, self.actualizar_cronometro)
-                        self.after(0, self.mostrar_botones)
-                        self.after(0, lambda: self.hangup_btn.state(['disabled']))
-                        self.after(0, self.cerrar_ventana_llamada)
+                    llamada_activa = False
+                    llamada_entrante_activa = False
+                    self.llamada_entrante_activa = False
+                    self.en_llamada = False
+                    self.call_timer_running = False
+                    self.call_start_time = None
+                    self.after(0, self.actualizar_cronometro)
+                    self.after(0, self.mostrar_botones)
+                    self.after(0, lambda: self.hangup_btn.state(['disabled']))
+                    self.after(0, self.cerrar_ventana_llamada)
 
                 time.sleep(1)
 
