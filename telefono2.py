@@ -246,16 +246,16 @@ class ADBPhoneApp(tk.Tk):
         if number.startswith("34") and not number.startswith("+") and len(number) > 9:
             number = "+" + number
 
-        self.after(0, lambda: self.call_btn.state(['disabled']))
+        self.call_btn.state(['disabled'])  # <-- INSTANTÁNEO
 
         def task():
-            self.en_llamada = True  # <-- Mueve esto AQUÍ, antes de mostrar botones
+            self.en_llamada = True
             subprocess.run(['adb', '-s', self.current_device, 'shell', 'am', 'start', '-a',
                             'android.intent.action.CALL', '-d', f'tel:{number}'],
                         capture_output=True, encoding='utf-8', errors='replace')
             self.call_start_time = None
             self.call_timer_running = False
-            self.after(0, self.mostrar_botones)
+            # self.after(0, self.mostrar_botones)  # <-- QUITA ESTA LÍNEA
             self.after(3000, self.cargar_historial)
 
         threading.Thread(target=task, daemon=True).start()
