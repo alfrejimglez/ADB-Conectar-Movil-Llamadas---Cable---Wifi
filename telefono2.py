@@ -221,7 +221,11 @@ class ADBPhoneApp(tk.Tk):
         self.error_label.pack()
 
     def mostrar_botones(self):
-        self.call_btn.state(['!disabled'])
+        # Solo habilita "Llamar" si no hay llamada activa ni entrante
+        if not self.en_llamada and not self.llamada_entrante_activa:
+            self.call_btn.state(['!disabled'])
+        else:
+            self.call_btn.state(['disabled'])
         self.hangup_btn.state(['!disabled' if self.en_llamada else 'disabled'])
 
     def ocultar_botones(self):
@@ -242,11 +246,13 @@ class ADBPhoneApp(tk.Tk):
         if number.startswith("34") and not number.startswith("+") and len(number) > 9:
             number = "+" + number
 
+        self.after(0, lambda: self.call_btn.state(['disabled']))
+
         def task():
+            self.en_llamada = True  # <-- Mueve esto AQUÍ, antes de mostrar botones
             subprocess.run(['adb', '-s', self.current_device, 'shell', 'am', 'start', '-a',
                             'android.intent.action.CALL', '-d', f'tel:{number}'],
                         capture_output=True, encoding='utf-8', errors='replace')
-            self.en_llamada = True  # ✅ Solo aquí, una vez
             self.call_start_time = None
             self.call_timer_running = False
             self.after(0, self.mostrar_botones)
@@ -292,7 +298,7 @@ class ADBPhoneApp(tk.Tk):
                         numero = numero_match.group(1) if numero_match else "Desconocido"
 
                         self.after(0, lambda: self.mostrar_dialogo_llamada(numero))
-
+                        self.after(0, lambda: self.call_btn.state(['disabled']))  # <-- AQUÍ
 
                 # Llamada activa
                 elif "mCallState=2" in salida:
