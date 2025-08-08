@@ -339,13 +339,15 @@ class ADBPhoneApp(tk.Tk):
         if self.dialogo_abierto:
             return
 
-
         self.dialogo_abierto = True
         self.ventana_llamada = tk.Toplevel(self)
         self.ventana_llamada.title("📞 Llamada entrante")
         self.ventana_llamada.geometry("300x150")
         self.ventana_llamada.resizable(False, False)
         self.ventana_llamada.protocol("WM_DELETE_WINDOW", self.cerrar_ventana_llamada)
+
+#CON ESTO PRIMER PLANO
+        self.ventana_llamada.attributes("-topmost", True)
 
         ttk.Label(self.ventana_llamada, text=f"📲 Llamada de: {numero}", font=("Arial", 12)).pack(pady=10)
 
@@ -354,7 +356,6 @@ class ADBPhoneApp(tk.Tk):
 
         ttk.Button(btn_frame, text="✅ Contestar", command=self.accion_contestar).pack(side=tk.LEFT, padx=10)
         ttk.Button(btn_frame, text="❌ Rechazar", command=self.accion_rechazar).pack(side=tk.LEFT, padx=10)
-
 
 
     def actualizar_cronometro(self):
